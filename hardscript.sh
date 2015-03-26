@@ -133,7 +133,7 @@ fi
 
 if [[ $answermySQL= y ]] ; then
     kill `cat /mysql-data-directory/host_name.pid`
-    password=echo -n "What would you like the password to be? " 
+    read -p "What would you like the password to be? " password
     sudo echo UPDATE mysql.user SET Password=PASSWORD('$password') WHERE User='root'; FLUSH PRIVILEGES; >> /home/root/mysql-init
     mysqld_safe --init-file=/home/me/mysql-init &
     rm /home/root/mysql-init
