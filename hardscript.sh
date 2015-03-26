@@ -29,6 +29,7 @@ read -p "Do you want to install *ALL* updates to OpenSUSE Linux now? [y/n] " ans
 read -p "Do you want to install bastille [y/n] " answerBastille
 read -p "Do you want to install Lynis [y/n] " answerLynis
 read -p "Do you want to install Fail2ban [y/n] " answerFail2ban
+read -p "Do you want to update the mySQL password [y/n]"answermySQL
 }
 
 echo "version"
@@ -54,6 +55,7 @@ if [[ $1 = -a ]] ; then
         answerBastille=y
         answerLynis=y
         answerFail2ban=y
+        answermySQL=y
     else
         printf "Verify what you do and do not want done.... "
         sleep 2
@@ -129,7 +131,13 @@ if [[ $answerFail2ban = y ]] ; then
     /etc/init.d/fail2ban start
 fi
 
-
+if [[ $answermySQL= y ]] ; then
+    kill `cat /mysql-data-directory/host_name.pid`
+    password=echo -n "What would you like the password to be? " 
+    sudo echo UPDATE mysql.user SET Password=PASSWORD('$password') WHERE User='root'; FLUSH PRIVILEGES; >> /home/root/mysql-init
+    mysqld_safe --init-file=/home/me/mysql-init &
+    rm /home/root/mysql-init
+    
 echo "version"
 lsb_release -r >> file
 uname -r >> file
