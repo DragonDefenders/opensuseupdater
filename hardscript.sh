@@ -30,6 +30,9 @@ read -p "Do you want to install bastille [y/n] " answerBastille
 read -p "Do you want to install Lynis [y/n] " answerLynis
 read -p "Do you want to install Fail2ban [y/n] " answerFail2ban
 read -p "Do you want to install Nikto [y/n] " answerNikto
+read -p "Do you want to install Nmap [y/n] " answerNmap
+read -p "Do you want to install Nessus [y/n] " answerNessus
+read -p "Do you want to install OSSEC [y/n] " answerOSSEC
 read -p "Do you want to update the mySQL password [y/n]"answermySQL
 }
 
@@ -91,7 +94,7 @@ if [[ $answerUpdate = y ]] ; then
 fi
 
 if [[ $answerSecUpdate = y ]] ; then
-    ?????
+    #?????
 fi
 
 if [[ $answermasshardening = y ]] ; then  
@@ -104,6 +107,7 @@ if [[ $answermasshardening = y ]] ; then
     sudo echo net.ipv6.conf.default.disable_ipv6 = 1 >> /etc/sysctl.conf
     sudo echo net.ipv6.conf.lo.disable_ipv6 = 1 >> /etc/sysctl.conf
     sudo sysctl -p
+    echo "Disabled icmp echo requests and ipv6 this task was completed at: " $(date) >> changes
 fi
 
 if [[ $answerBastille = y ]] ; then
@@ -113,6 +117,7 @@ if [[ $answerBastille = y ]] ; then
     chmod 777 Install.sh
     chmod a+x Install.sh
     sudo ./Install.sh
+    echo "Installed Bastille, this task was completed at: " $(date) >> changes
 fi
 
 if [[ $answerLynis = y ]] ; then
@@ -123,6 +128,7 @@ if [[ $answerLynis = y ]] ; then
     chmod a+x lynis
     ./lynis -q audit system --log-file /home/lynis_output
     cd /home/Downloads
+    echo "Installed Lynis, this task was completed at: " $(date) >> changes
 fi
 
 if [[ $answerFail2ban = y ]] ; then
@@ -130,6 +136,7 @@ if [[ $answerFail2ban = y ]] ; then
     yast2 -i fail2ban 
     chkconfig --add fail2ban 
     /etc/init.d/fail2ban start
+    echo "Installed Fail2ban, this task was completed at: " $(date) >> changes
 fi
 
 if [[ $answermySQL= y ]] ; then
@@ -138,6 +145,7 @@ if [[ $answermySQL= y ]] ; then
     sudo echo UPDATE mysql.user SET Password=PASSWORD('$password') WHERE User='root'; FLUSH PRIVILEGES; >> /home/root/mysql-init
     mysqld_safe --init-file=/home/me/mysql-init &
     rm /home/root/mysql-init
+    echo "Installed mySQL, this task was completed at: " $(date) >> changes
     
 if [[ $answerNikto= y ]] ; then
     wget https://github.com/sullo/nikto/archive/master.zip --no-check-certificate
@@ -147,9 +155,19 @@ if [[ $answerNikto= y ]] ; then
     chmod a+x nikto.pl 
     chmod 777 nikto.pl
     ./nikto.pl -host localhost
-
+    echo "Installed Nikto, this task was completed at: " $(date) >> changes
+    
 if [[ $answerNmap= y ]] ; then
     zypper install nmap
+    echo "Installed Nmap, this task was completed at: " $(date) >> changes
+    
+if [[ $answerNessus= y ]] ; then
+    http://downloads.nessus.org/nessus3dl.php?file=Nessus-6.3.3-suse11.i586.rpm&licence_accept=yes&t=3cc0e52131cd121bbda2ee0190a4f224 --
+    echo "Installed Nessus, this task was completed at: " $(date) >> changes
+    
+if [[ $answerOSSEC= y ]] ; then
+    
+    zypper install make
     
 echo "version"
 lsb_release -r >> file
