@@ -29,6 +29,7 @@ read -p "Do you want to install *ALL* updates to OpenSUSE Linux now? [y/n] " ans
 read -p "Do you want to install bastille [y/n] " answerBastille
 read -p "Do you want to install Lynis [y/n] " answerLynis
 read -p "Do you want to install Fail2ban [y/n] " answerFail2ban
+read -p "Do you want to install Nikto [y/n] " answerNikto
 read -p "Do you want to update the mySQL password [y/n]"answermySQL
 }
 
@@ -137,6 +138,18 @@ if [[ $answermySQL= y ]] ; then
     sudo echo UPDATE mysql.user SET Password=PASSWORD('$password') WHERE User='root'; FLUSH PRIVILEGES; >> /home/root/mysql-init
     mysqld_safe --init-file=/home/me/mysql-init &
     rm /home/root/mysql-init
+    
+if [[ $answerNikto= y ]] ; then
+    wget https://github.com/sullo/nikto/archive/master.zip --no-check-certificate
+    unzip nikto-master.zip
+    cd nikto-master
+    cd program
+    chmod a+x nikto.pl 
+    chmod 777 nikto.pl
+    ./nikto.pl -host localhost
+
+if [[ $answerNmap= y ]] ; then
+    zypper install nmap
     
 echo "version"
 lsb_release -r >> file
