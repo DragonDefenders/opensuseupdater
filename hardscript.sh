@@ -34,6 +34,7 @@ read -p "Do you want to install Nmap [y/n] " answerNmap
 read -p "Do you want to install Nessus [y/n] " answerNessus
 read -p "Do you want to install OSSEC [y/n] " answerOSSEC
 read -p "Do you want to update the mySQL password [y/n]"answermySQL
+read -p "Do you want to install Artillery [y/n]" answerArtillery
 }
 
 echo "version"
@@ -60,6 +61,7 @@ if [[ $1 = -a ]] ; then
         answerLynis=y
         answerFail2ban=y
         answermySQL=y
+        answerArtillery=y
     else
         printf "Verify what you do and do not want done.... "
         sleep 2
@@ -156,6 +158,12 @@ if [[ $answerNikto= y ]] ; then
     chmod 777 nikto.pl
     ./nikto.pl -host localhost
     echo "Installed Nikto, this task was completed at: " $(date) >> changes
+    
+if [[ $answerArtillery = y ]] ; then
+    git clone git://github.com/trustedsec/artillery
+    cd artillery
+    ./setup.py
+    echo "Installed Artillery, this task was completed at: " $(date) >> changes
     
 if [[ $answerNmap= y ]] ; then
     zypper install nmap
