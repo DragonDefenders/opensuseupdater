@@ -1,6 +1,7 @@
 #!/bin/bash
-read -p "Are you sure you want to diable login on all acocunts except the secondary and root accounts?" doublecheck
-if [[ doublecheck=y ]] then;
+read -p "Are you sure you want to diable login on all acocunts except the secondary and root accounts? [y/n] " doublecheck
+read -p "Do you want to disable root login? [y/n] " disableroot
+if [[ $doublecheck = y ]] ; then
   sudo passwd at -l
   sudo passwd avahi -l
   sudo passwd bin -l
@@ -27,7 +28,7 @@ if [[ doublecheck=y ]] then;
   sudo passwd wwwrun -l
   echo "Disabled login to all non critical acounts, this task was completed at: " $(date) >> changes
 fi
-if [[disableroot=y ]] then;
+if [[ $disableroot = y ]] ; then
   sudo passwd root -l
   echo "Disabled root login , this task was completed at: " $(date) >> changes
 fi
