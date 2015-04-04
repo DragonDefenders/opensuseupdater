@@ -132,7 +132,7 @@ fi
 if [[ $answermySQL = y ]] ; then
     kill `ps aux | grep mysqld`
     read -p "What would you like the password to be? " password
-    sudo echo UPDATE mysql.user SET Password='$password' WHERE User='root'; && FLUSH PRIVILEGES; >> /root/mysql-init
+    sudo echo UPDATE mysql.user SET Password='$password' WHERE User='root';'\n'FLUSH PRIVILEGES; >> /root/mysql-init
     mysqld_safe --init-file=/root/mysql-init
     rm /home/root/mysql-init
     /etc/init.d/mysql restart
