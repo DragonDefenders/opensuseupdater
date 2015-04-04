@@ -95,10 +95,6 @@ if [[ $answerUpdate = y ]] ; then
     echo "Fully Updated OpenSUSE release, this task was completed at: " $(date) >> changes
 fi
 
-if [[ $answerSecUpdate = y ]] ; then
-    #?????
-fi
-
 if [[ $answermasshardening = y ]] ; then  
     #sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config  #automated above lines for ssh config
     sudo echo Ignore ICMP request: >> /etc/sysctl.conf
