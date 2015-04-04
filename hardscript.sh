@@ -1,5 +1,5 @@
 #!/bin/bash
-# OpenSUSE Configuration and Updater version 1.0
+# OpenSUSE Configuration and Updater version 1.1
 # Optimized for OpenSUSE 11.3
 # Thanks to Pashapasta for the script template, check out the Kali version at https://github.com/PashaPasta/KaliUpdater/blob/master/KaliConfigAndUpdate.sh
 # Please contact dteo827@gmail.com with bugs or feature requests
