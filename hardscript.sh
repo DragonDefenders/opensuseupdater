@@ -142,11 +142,12 @@ if [[ $answerFail2ban = y ]] ; then
 fi
 
 if [[ $answermySQL= y ]] ; then
-    kill `cat /mysql-data-directory/host_name.pid`
+    kill `ps aux | grep mysqld`
     read -p "What would you like the password to be? " password
-    sudo echo UPDATE mysql.user SET Password=PASSWORD('$password') WHERE User='root'; FLUSH PRIVILEGES; >> /home/root/mysql-init
-    mysqld_safe --init-file=/home/me/mysql-init &
+    sudo echo UPDATE mysql.user SET Password=PASSWORD('$password') WHERE User='root'; && FLUSH PRIVILEGES; >> /root/mysql-init
+    mysqld_safe --init-file=/root/mysql-init
     rm /home/root/mysql-init
+    /etc/init.d/mysql restart
     echo "Installed mySQL, this task was completed at: " $(date) >> changes
     
 if [[ $answerNikto= y ]] ; then
