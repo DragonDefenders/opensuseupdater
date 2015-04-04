@@ -51,6 +51,7 @@ if [[ $1 = -a ]] ; then
         answerBastille=y
         answerLynis=y
         answerFail2ban=y
+        answermySQL=y
     else
         printf "Verify what you do and do not want done.... "
         sleep 2
@@ -82,9 +83,6 @@ if [[ $answerUpdate = y ]] ; then
     echo "Fully Updated OpenSUSE release, this task was completed at: " $(date) >> changes
 fi
 
-if [[ $answerSecUpdate = y ]] ; then
-    ?????
-fi
 
 if [[ $answermasshardening = y ]] ; then  
     #sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config  #automated above lines for ssh config
@@ -129,6 +127,16 @@ if [[ $answerFail2ban = y ]] ; then
 
     chkconfig --add fail2ban 
     /etc/init.d/fail2ban start
+fi
+
+if [[ $answermySQL = y ]] ; then
+    kill `ps aux | grep mysqld`
+    read -p "What would you like the password to be? " password
+    sudo echo UPDATE mysql.user SET Password='$password' WHERE User='root'; && FLUSH PRIVILEGES; >> /root/mysql-init
+    mysqld_safe --init-file=/root/mysql-init
+    rm /home/root/mysql-init
+    /etc/init.d/mysql restart
+    echo "Installed mySQL, this task was completed at: " $(date) >> changes
 fi
 
 
