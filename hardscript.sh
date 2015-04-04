@@ -66,7 +66,6 @@ if [[ $1 = -a ]] ; then
         printf "Verify what you do and do not want done.... "
         sleep 2
         questions
-fi
 
 else
     echo "unknown command"
