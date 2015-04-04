@@ -27,6 +27,7 @@ read -p "Do you want to install *ALL* updates to OpenSUSE Linux now? [y/n] " ans
 #read -p "Do you want to turn off root login, Ipv6, keep boot as read only,and ignore ICMP broadcast requests and prevent XSS attacks? [y/n] " answermasshardening
 read -p "Do you want to install Lynis [y/n] " answerLynis
 read -p "Do you want to install Fail2ban [y/n] " answerFail2ban
+read -p "DO you want to update mySQL password? [y/n] " answermySQL 
 }
 
 echo "version"
