@@ -96,6 +96,43 @@ function answerUpdate {
 #############################
 #    Hardening Scripts      #
 #############################
+######## resetMysql 
+function disableAccounts {
+        echo "This will disable login on all accounts except the ones made during/after install. Do you want to do this? (Y/N)"
+        read install
+        if [[ $install = Y || $install = y ]] ; then
+                echo -e "\e[31m[+] Resetting now!\e[0m"
+                passwd at -l
+                passwd avahi -l
+                passwd bin -l
+                passwd daemon -l
+                passwd dnsmasq -l
+                passwd ftp -l
+                passwd games -l
+                passwd gdm -l
+                passwd haldaemon -l
+                passwd lp -l
+                passwd mail -l
+                passwd man -l
+                passwd messagebus -l
+                passwd news -l
+                passwd nobody -l
+                passwd ntp -l
+                passwd polkituser -l
+                passwd postfix -l
+                passwd pulse -l
+                passwd root -l
+                passwd rtkit -l
+                passwd sshd -l
+                passwd suse-ncc -l
+                passwd uucp -l
+                passwd wwwrun -l
+                echo "All accounts disabled, this task was completed at: " $(date) >> changes
+                echo -e "\e[32m[-] Done disabling accounts !\e[0m"           
+        else
+                echo -e "\e[32m[-] Ok,maybe later !\e[0m"
+        fi        
+}
 
 ######## resetMysql 
 function resetMysql {
@@ -149,7 +186,7 @@ echo -e "
                 Hardening Scripts
 \033[31m#######################################################\033[m"
 
-select menusel in "mySQL" "Shellshock" "Install All" "Back to Main"; do
+select menusel in "mySQL" "Shellshock" "Disable all other Accounts" "Install All" "Back to Main"; do
 case $menusel in
         "mySQL")
                 resetMysql
@@ -160,7 +197,12 @@ case $menusel in
                 answerShellshock
                 pause
                 answerHardeningScripts ;;
-                 
+
+        "Disable all other Accounts")
+                disableAccounts
+                pause
+                answerHardeningScripts ;;
+
         "Install All")
                 echo -e "\e[31m[+] Installing Extra's\e[0m"
                 answerMysql
