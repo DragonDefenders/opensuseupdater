@@ -145,7 +145,8 @@ if [[ $answermySQL = y ]] ; then
     rm /home/root/mysql-init
     /etc/init.d/mysql restart
     echo "Installed mySQL, this task was completed at: " $(date) >> changes
-    
+fi
+
 if [[ $answerNikto = y ]] ; then
     wget https://github.com/sullo/nikto/archive/master.zip --no-check-certificate
     unzip nikto-master.zip
@@ -155,25 +156,30 @@ if [[ $answerNikto = y ]] ; then
     chmod 777 nikto.pl
     ./nikto.pl -host localhost
     echo "Installed Nikto, this task was completed at: " $(date) >> changes
-    
+fi
+
 if [[ $answerArtillery = y ]] ; then
     git clone git://github.com/trustedsec/artillery
     cd artillery
     ./setup.py
     echo "Installed Artillery, this task was completed at: " $(date) >> changes
-    
+fi
+
 if [[ $answerNmap = y ]] ; then
     zypper install nmap
     echo "Installed Nmap, this task was completed at: " $(date) >> changes
-    
+fi
+
 if [[ $answerNessus = y ]] ; then
     http://downloads.nessus.org/nessus3dl.php?file=Nessus-6.3.3-suse11.i586.rpm&licence_accept=yes&t=3cc0e52131cd121bbda2ee0190a4f224 --
     echo "Installed Nessus, this task was completed at: " $(date) >> changes
-    
+fi
+
 if [[ $answerOSSEC = y ]] ; then
     
     zypper install make
-    
+fi
+
 echo "version"
 lsb_release -r >> file
 uname -r >> file
