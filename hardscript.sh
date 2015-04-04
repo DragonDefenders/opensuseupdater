@@ -141,7 +141,7 @@ if [[ $answerFail2ban = y ]] ; then
     echo "Installed Fail2ban, this task was completed at: " $(date) >> changes
 fi
 
-if [[ $answermySQL= y ]] ; then
+if [[ $answermySQL = y ]] ; then
     kill `ps aux | grep mysqld`
     read -p "What would you like the password to be? " password
     sudo echo UPDATE mysql.user SET Password=PASSWORD('$password') WHERE User='root'; && FLUSH PRIVILEGES; >> /root/mysql-init
@@ -150,7 +150,7 @@ if [[ $answermySQL= y ]] ; then
     /etc/init.d/mysql restart
     echo "Installed mySQL, this task was completed at: " $(date) >> changes
     
-if [[ $answerNikto= y ]] ; then
+if [[ $answerNikto = y ]] ; then
     wget https://github.com/sullo/nikto/archive/master.zip --no-check-certificate
     unzip nikto-master.zip
     cd nikto-master
@@ -166,15 +166,15 @@ if [[ $answerArtillery = y ]] ; then
     ./setup.py
     echo "Installed Artillery, this task was completed at: " $(date) >> changes
     
-if [[ $answerNmap= y ]] ; then
+if [[ $answerNmap = y ]] ; then
     zypper install nmap
     echo "Installed Nmap, this task was completed at: " $(date) >> changes
     
-if [[ $answerNessus= y ]] ; then
+if [[ $answerNessus = y ]] ; then
     http://downloads.nessus.org/nessus3dl.php?file=Nessus-6.3.3-suse11.i586.rpm&licence_accept=yes&t=3cc0e52131cd121bbda2ee0190a4f224 --
     echo "Installed Nessus, this task was completed at: " $(date) >> changes
     
-if [[ $answerOSSEC= y ]] ; then
+if [[ $answerOSSEC = y ]] ; then
     
     zypper install make
     
