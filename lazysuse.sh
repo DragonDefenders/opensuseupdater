@@ -3,14 +3,12 @@
 # Optimized for OpenSUSE 11.3
 # Please contact dteo827@gmail.com with bugs or feature requests
 
-echo "version"
-lsb_release -r >> file
+""
+"Computer info: \nVersion:" >> changes
+lsb_release -r >> changes
 uname -r >> file
-echo date >> file
-echo
-echo "my name" >> file
-echo
-echo dpkg -l >> file
+date >> changes
+dpkg -l >> file
 
 clear
 version="2.0"
@@ -207,6 +205,7 @@ case $menusel in
                 echo -e "\e[31m[+] Installing Extra's\e[0m"
                 answerMysql
                 answershellshock
+                disableAccounts
                 echo -e "\e[32m[-] Done Installing Extra's\e[0m"
                 pause
                 answerHardeningScripts ;;         
