@@ -119,7 +119,6 @@ function disableAccounts {
                 passwd polkituser -l
                 passwd postfix -l
                 passwd pulse -l
-                passwd root -l
                 passwd rtkit -l
                 passwd sshd -l
                 passwd suse-ncc -l
