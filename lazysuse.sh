@@ -385,6 +385,7 @@ function grsecurity {
             sudo zypper install ncurses-devel
 
             patch -p1make <grsecurity-3.1-3.14.37-201504051405.patch
+            read -p "Turn off the ability to change Grsecurity's settings via sysctrl\n Turn On EXEC loggin\n watch the audit log [enter] " answerokeeb0ss
             make menuconfig
             make rpm
             cd /usr/src/packages/RPMS/i386/
