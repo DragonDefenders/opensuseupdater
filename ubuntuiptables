@@ -1,0 +1,32 @@
+#!/bin/bash
+
+#make temp file for server ip
+#localIP= 10.10.103.70
+#serverIP= 10.10.103.5
+#gateway=10.10.103.1
+#subnet=10.10.103.0/8
+
+iptables -F
+iptables -X
+
+iptables -P INPUT DROP
+iptables -P OUTPUT DROP
+iptables -P FORWARD DROP
+
+iptables -A INPUT -p udp -m udp --dport 631 -s 10.10.103.0/8 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 631 -s 10.10.103.0/8 -j ACCEPT
+
+iptables -A INPUT -p udp -m udp --dport 9100 -s 10.10.103.0/8 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 9100 -s 10.10.103.0/8 -j ACCEPT
+
+iptables -A INPUT -p tcp --dport 80 -s 10.10.103.0/8 -j ACCEPT
+iptables -A INPUT -p tcp --dport 443 -s 10.10.103.0/8 -j ACCEPT
+
+wget http://prdownloads.sourceforge.net/hplip/hplip-3.15.2.run
+sh hplip-3.15.2.run
+
+# for help go to http://hplipopensource.com/hplip-web/install/install/index.html
+# https://www.openprinting.org/printers
+# http://www.cups.org/documentation.php/network.html
+# https://wiki.archlinux.org/index.php/CUPS
+# http://docs.oracle.com/cd/E23824_01/html/821-1451/gllgm.html
