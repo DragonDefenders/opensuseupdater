@@ -101,14 +101,11 @@ function iptables {
     read install
     if [[ $install = Y || $install = y ]] ; then
         echo -e "\e[31m[+] Resetting now!\e[0m"
-        #iptables -A INPUT -p udp --dport 9100 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT -s 
-        #iptables -A OUTPUT -p udp --sport 9100 -m state --state ESTABLISHED,RELATED -j ACCEPT
-        
         #make temp file for local ip
-        localIP= 10.10.103.15
-        serverIP= 10.10.103.5
-        gateway=10.10.103.1
-        subnet=10.10.103.0/8
+        #localIP= 10.10.103.15
+        #serverIP= 10.10.103.5
+        #gateway=10.10.103.1
+        #subnet=10.10.103.0/8
         
         SPAMLIST="blockedip"
         SPAMDROPMSG="BLOCKED IP DROP"
@@ -129,6 +126,7 @@ function iptables {
         #unlimited 
         /usr/sbin/iptables -A INPUT -i lo -j ACCEPT
         /usr/sbin/iptables -A OUTPUT -o lo -j ACCEPT
+        /usr/sbin/iptables -A INPUT -s 127.0.0.0/8 -j DROP
          
         # DROP all incomming traffic
         /usr/sbin/iptables -P INPUT DROP
@@ -181,7 +179,7 @@ function iptables {
         /usr/sbin/iptables -A OUTPUT -o eth0 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
          
         # Allow ssh 
-        /usr/sbin/iptables -A INPUT -p tcp --destination-port 22 -j ACCEPT
+        /usr/sbin/iptables -A INPUT -p tcp --sport 22 -s 10.10.103.0/8 -j ACCEPT
          
         # allow incomming ICMP ping pong stuff
         /usr/sbin/iptables -A INPUT -p icmp --icmp-type 8 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
@@ -195,9 +193,21 @@ function iptables {
         #iptables -A OUTPUT -p tcp --sport 53 -m state --state ESTABLISHED,RELATED -j ACCEPT
          
         # Open port 80
-        /usr/sbin/iptables -A INPUT -p tcp --destination-port 80 -j ACCEPT
+        /usr/sbin/iptables -A INPUT -i eth0 -p tcp --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT
+        /usr/sbin/iptables -A OUTPUT -o eth0 -p tcp --sport 80 -m state --state ESTABLISHED -j ACCEPT
+        
+        # Allow incoming HTTPS
+        /usr/sbin/iptables -A INPUT -i eth0 -p tcp --dport 443 -m state --state NEW,ESTABLISHED -j ACCEPT
+        /usr/sbin/iptables -A OUTPUT -o eth0 -p tcp --sport 443 -m state --state ESTABLISHED -j ACCEPT
         ##### Add your rules below ######
-         
+        
+        #Allow outbound DNS
+        /usr/sbin/iptables -A OUTPUT -p udp -o eth0 --dport 53 -j ACCEPT
+        /usr/sbin/iptables -A INPUT -p udp -i eth0 --sport 53 -j ACCEPT
+        
+        # prevent dos
+        /usr/sbin/iptables -A INPUT -p tcp --dport 80 -m limit --limit 25/minute --limit-burst 100 -j ACCEPT
+        
         ##### END your rules ############
          
         # Do not log smb/windows sharing packets - too much logging
@@ -208,6 +218,7 @@ function iptables {
         /usr/sbin/iptables -A INPUT -j LOG
         /usr/sbin/iptables -A FORWARD -j LOG
         /usr/sbin/iptables -A INPUT -j DROP
+
         echo "iptables secured, this task was completed at: " $(date) >> changes
         echo -e "\e[32m[-] Done securing iptables !\e[0m"           
     else
@@ -351,6 +362,70 @@ done
 ##########################################
 #           Defense Programs             #
 ##########################################
+##### Download and compile Grsecurity
+function grsecurity {
+        echo "This will install Grsecurity. Do you want to do this? (Y/N)"
+        read install
+        if [[ $install = Y || $install = y ]] ; then
+            #download kernel 
+            wget https://www.kernel.org/pub/linux/kernel/v3.x/linux-3.14.37.tar.xz --no-check-certificate
+
+            #unzip and change directories
+            tar -xf linux-3.14.37.tar.xz
+            cd linux-3.14.37
+
+            #download grsec and gradm inside kernel directory
+            wget https://grsecurity.net/stable/grsecurity-3.1-3.14.37-201504051405.patch --no-check-certificate
+            wget https://grsecurity.net/stable/gradm-3.1-201503211320.tar.gz --no-check-certificate
+            tar -zxvf gradm-3.1-201503211320.tar.g
+            #patch kernel
+            sudo zypper install patch
+            sudo zypper install make
+            sudo zypper install gcc
+            sudo zypper install ncurses-devel
+
+            patch -p1make <grsecurity-3.1-3.14.37-201504051405.patch
+            make menuconfig
+            make rpm
+            cd /usr/src/packages/RPMS/i386/
+            rpm -ivh kernel-3.14.37_0.6_desktop-1.i386.rpm
+            mkinitrd
+            # Add kernel entry to boot menu
+            echo -e "
+            \033[31m#######################################################\033[m
+                        DOUBLE CHECK mkinitrd ADD TO /boot/grub/menu.lst
+            \033[31m#######################################################\033[m"
+            echo "OpenSuse 11.3 With Grsecurity 3.14.37-0.6" >> /boot/grub/menu.lst
+            #echo "     root (hd0,1)" >> /boot/grub/menu.lst
+            #echo "     kernel /boot/vmlinuz-3.14.37-0.6-desktop root=/dev/sda2 resume=/dev/disk/by-id/ata-OpenSUSE_11.3-0_SSD_JNKM3MF2V3Z4DFYXB0EX-part2 resume=/dev/disk/by-id/ata-OpenSUSE_11.3-0_SSD_JNKM3MF2V3Z4DFYXB0EX-part1 splash=silent crashkernel=256M-:128M showopts vga=0x339" >> /boot/grub/menu.lst            
+            #echo "     initrd /boot/initrd-3.14.37-0.6-desktop" >> /boot/grub/menu.lst
+            
+        else
+             echo -e "\e[32m[-] Ok,maybe later !\e[0m"
+        fi   
+
+}
+
+######## Install IPTSTATE
+funciton answerIptstate {
+        echo "This will install Iptstate. Do you want to install it ? (Y/N)"
+        read install
+        if [[ $install = Y || $install = y ]] ; then
+                echo -e "\e[31m[+] Installing Iptstate now!\e[0m"
+                wget http://downloads.sourceforge.net/project/iptstate/iptstate/2.2.5/iptstate-2.2.5.tar.bz2?r=http%3A%2F%2Fwww.phildev.net%2Fiptstate%2Fdownload.shtml&ts=1428380802&use_mirror=softlayer-da
+                tar -xjf iptstate-2.2.5.tar.bz2
+                wget http://www.netfilter.org/projects/libnetfilter_conntrack/files/libnetfilter_conntrack-1.0.4.tar.bz2
+                tar -xjf libnetfilter_conntrack-1.0.4.tar.bz2
+                cd iptstate-2.2.5
+                sudo zypper install gcc-c++
+                sudo make
+                sudo make install
+                echo "Installed Iptstate, this task was completed at: " $(date) >> changes
+                echo -e "\e[32m[-] Done Installing Iptstate!\e[0m"           
+        else
+                echo -e "\e[32m[-] Ok,maybe later !\e[0m"
+        fi                     
+}
 
 ######## Install OSSEC
 function answerOSSEC {
@@ -490,8 +565,12 @@ echo -e "
                 Install Defense Programs
 \033[31m#######################################################\033[m"
 
-select menusel in "Lynis" "Fail2ban" "Nikto" "Nmap" "Nessus" "OSSEC" "Artillery" "Install All" "Back to Main"; do
+select menusel in "Grsecurity" Lynis" "Fail2ban" "Nikto" "Nmap" "Nessus" "OSSEC" "Artillery" "Install All" "Back to Main"; do
 case $menusel in
+        "Grsecurity")
+                grsecurity
+                pause 
+                answerDefense;;
         "Lynis")
                 answerLynis
                 pause 
