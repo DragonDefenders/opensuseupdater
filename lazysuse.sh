@@ -270,9 +270,9 @@ function resetMysql {
                 echo -e "\e[31m[+] Resetting now!\e[0m"
                 kill `ps aux | grep mysqld`
                 read -p "What would you like the password to be? " password
-                sudo echo UPDATE mysql.user SET Password='$password' WHERE User='root';'\n'FLUSH PRIVILEGES;'\n'quit; >> /root/mysql-init
-                mysqld_safe --init-file=/root/mysql-init
-                rm /home/root/mysql-init
+                sudo echo "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$password')" >> /root/mysql-init
+                mysqld_safe --init-file=/root/mysql-init &
+                rm /root/mysql-init
                 /etc/init.d/mysql restart
                 echo "Reset mySQL Password, this task was completed at: " $(date) >> changes
                 echo -e "\e[32m[-] Done resetting mysql !\e[0m"           
